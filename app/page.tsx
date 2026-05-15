@@ -2,7 +2,70 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+function TrackMap() {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-5">
 
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-xl font-semibold">
+          Nordschleife Map
+        </h2>
+
+        <span className="text-green-400 text-sm">
+          LIVE
+        </span>
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-[#101010] p-5 overflow-hidden">
+
+       <img
+        src="/nords-map.png"
+        alt="Nordschleife Map"
+        className="w-full rounded-2xl"
+      /> 
+      <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+        <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
+          🌧 Karussell → Wet
+        </div>
+
+        <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
+          🌫 Hohe Acht → Fog
+        </div>
+
+        <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
+          ☀ GP Sector → Dry
+        </div>
+
+        <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
+          🟨 Sector 4 → Yellow
+        </div>
+
+      </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 gap-3 text-sm">
+
+        <div className="rounded-2xl border border-white/10 bg-[#101010] p-3 text-center">
+          <div className="mb-2 h-3 w-3 rounded-full bg-green-500 mx-auto" />
+          Dry
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#101010] p-3 text-center">
+          <div className="mb-2 h-3 w-3 rounded-full bg-yellow-500 mx-auto" />
+          Damp
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#101010] p-3 text-center">
+          <div className="mb-2 h-3 w-3 rounded-full bg-purple-500 mx-auto" />
+          Fog
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
 export default function Home() {
   const [weather, setWeather] = useState({
     airTemp: "--",
@@ -361,6 +424,9 @@ export default function Home() {
               </div>
             </div>      
         </div>
+      </div>
+      <div className="mt-5">
+       <div><TrackMap /></div>
       </div>
     </main>
   );
