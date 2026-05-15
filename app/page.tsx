@@ -5,9 +5,11 @@ import axios from "axios";
 function TrackMap({
   selectedSector,
   setSelectedSector,
+  raceControl,
 }: {
   selectedSector: string;
   setSelectedSector: any;
+  raceControl: any[];
 }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-5">
@@ -73,6 +75,50 @@ function TrackMap({
 
     <div className="relative h-5 w-5 rounded-full bg-yellow-400 border-2 border-white" />
   </button>
+  {raceControl.map(
+  (alert, index) => {
+    let position =
+      "left-[50%] top-[50%]";
+
+    if (
+      alert.sector ===
+      "Brünnchen"
+    ) {
+      position =
+        "left-[88%] top-[34%]";
+    }
+
+    if (
+      alert.sector ===
+      "Karussell"
+    ) {
+      position =
+        "left-[63%] top-[28%]";
+    }
+
+    return (
+      <div
+        key={index}
+        className={`absolute ${position}`}
+      >
+        <div
+          className={`h-8 w-8 rounded-full animate-pulse flex items-center justify-center text-xs font-bold border-2 border-white ${
+            alert.type ===
+            "CODE60"
+              ? "bg-red-600"
+              : "bg-yellow-400 text-black"
+          }`}
+        >
+          {alert.type ===
+          "CODE60"
+            ? "60"
+            : "!"
+          }
+        </div>
+      </div>
+    );
+  }
+)}
 
 </div>
 
@@ -113,6 +159,45 @@ function TrackMap({
 
   </div>
 </div>
+
+      <div className="mt-5 rounded-2xl border border-red-500/30 bg-[#101010] p-4">
+
+          <h3 className="text-lg font-semibold text-red-400">
+            Race Control
+          </h3>
+
+          <div className="mt-3 space-y-2">
+
+            {raceControl.map(
+              (
+                alert,
+                index
+              ) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between rounded-xl border border-white/10 bg-[#161616] p-3"
+                >
+                  <span>
+                    {alert.sector}
+                  </span>
+
+                  <span
+                    className={`font-bold ${
+                      alert.type ===
+                      "CODE60"
+                        ? "text-red-400"
+                        : "text-yellow-400"
+                    }`}
+                  >
+                    {alert.type}
+                  </span>
+                </div>
+              )
+            )}
+
+          </div>
+        </div>
+
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
 
         <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
@@ -174,6 +259,18 @@ export default function Home() {
   useState<any[]>([]);
   const [selectedSector, setSelectedSector] =
   useState("Karussell");
+
+  const [raceControl, setRaceControl] =
+  useState([
+    {
+      sector: "Brünnchen",
+      type: "CODE60",
+    },
+    {
+      sector: "Karussell",
+      type: "YELLOW",
+    },
+  ]);
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -524,6 +621,9 @@ export default function Home() {
   }
   setSelectedSector={
     setSelectedSector
+  }
+  raceControl={
+    raceControl
   }
 /></div>
       </div>
