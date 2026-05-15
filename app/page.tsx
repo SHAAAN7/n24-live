@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-function TrackMap() {
+function TrackMap({
+  selectedSector,
+  setSelectedSector,
+}: {
+  selectedSector: string;
+  setSelectedSector: any;
+}) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-5">
 
@@ -18,11 +24,95 @@ function TrackMap() {
 
       <div className="rounded-2xl border border-white/10 bg-[#101010] p-5 overflow-hidden">
 
-       <img
-        src="/nords-map.png"
-        alt="Nordschleife Map"
-        className="w-full rounded-2xl"
-      /> 
+       <div className="relative">
+
+  <img
+    src="/nords-map.png"
+    alt="Nordschleife Map"
+    className="w-full rounded-2xl"
+  />
+
+  {/* Karussell */}
+  <button
+    onClick={() =>
+      setSelectedSector(
+        "Karussell"
+      )
+    }
+    className="absolute left-[63%] top-[28%]"
+  >
+    <div className="h-5 w-5 rounded-full bg-blue-500 animate-ping absolute" />
+
+    <div className="relative h-5 w-5 rounded-full bg-blue-400 border-2 border-white" />
+  </button>
+
+  {/* Hohe Acht */}
+  <button
+    onClick={() =>
+      setSelectedSector(
+        "Hohe Acht"
+      )
+    }
+    className="absolute left-[74%] top-[18%]"
+  >
+    <div className="h-5 w-5 rounded-full bg-purple-500 animate-ping absolute" />
+
+    <div className="relative h-5 w-5 rounded-full bg-purple-400 border-2 border-white" />
+  </button>
+
+  {/* Brünnchen */}
+  <button
+    onClick={() =>
+      setSelectedSector(
+        "Brünnchen"
+      )
+    }
+    className="absolute left-[88%] top-[34%]"
+  >
+    <div className="h-5 w-5 rounded-full bg-yellow-500 animate-ping absolute" />
+
+    <div className="relative h-5 w-5 rounded-full bg-yellow-400 border-2 border-white" />
+  </button>
+
+</div>
+
+<div className="mt-5 rounded-2xl border border-white/10 bg-[#101010] p-4">
+
+  <h3 className="text-lg font-semibold text-green-400">
+    {selectedSector}
+  </h3>
+
+  <div className="mt-3 space-y-2 text-white/70">
+
+    {selectedSector ===
+      "Karussell" && (
+      <>
+        <p>🌧 Wet surface</p>
+        <p>Grip → Low</p>
+        <p>Rain expected in 12m</p>
+      </>
+    )}
+
+    {selectedSector ===
+      "Hohe Acht" && (
+      <>
+        <p>🌫 Fog risk</p>
+        <p>Visibility → Medium</p>
+        <p>Wind gusts increasing</p>
+      </>
+    )}
+
+    {selectedSector ===
+      "Brünnchen" && (
+      <>
+        <p>🌦 Damp surface</p>
+        <p>Grip → Improving</p>
+        <p>No active yellow flags</p>
+      </>
+    )}
+
+  </div>
+</div>
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
 
         <div className="rounded-xl bg-[#161616] border border-white/10 p-3">
@@ -82,6 +172,8 @@ export default function Home() {
 
   const [trackConditions, setTrackConditions] =
   useState<any[]>([]);
+  const [selectedSector, setSelectedSector] =
+  useState("Karussell");
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -426,7 +518,14 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-5">
-       <div><TrackMap /></div>
+       <div><TrackMap
+  selectedSector={
+    selectedSector
+  }
+  setSelectedSector={
+    setSelectedSector
+  }
+/></div>
       </div>
     </main>
   );
