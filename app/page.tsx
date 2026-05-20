@@ -1,5 +1,5 @@
 "use client";
-import OnboardPanel from "@/components/OnboardPanel";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 function TrackMap({
