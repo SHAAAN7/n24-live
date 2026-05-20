@@ -1,15 +1,17 @@
 "use client";
-
+import OnboardPanel from "@/components/OnboardPanel";
 import { useEffect, useState } from "react";
 import axios from "axios";
 function TrackMap({
   selectedSector,
   setSelectedSector,
   raceControl,
+  trackZones,
 }: {
   selectedSector: string;
   setSelectedSector: any;
   raceControl: any[];
+  trackZones: any[];
 }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-5">
@@ -33,48 +35,66 @@ function TrackMap({
     alt="Nordschleife Map"
     className="w-full rounded-2xl"
   />
+  {trackZones.map(
+  (zone, index) => {
 
-  {/* Karussell */}
-  <button
-    onClick={() =>
-      setSelectedSector(
-        "Karussell"
-      )
-    }
-    className="absolute left-[63%] top-[28%]"
-  >
-    <div className="h-5 w-5 rounded-full bg-blue-500 animate-ping absolute" />
+    const colorMap: any = {
+      green: "bg-green-400",
+      yellow: "bg-yellow-400",
+      blue: "bg-blue-400",
+      purple: "bg-purple-400",
+    };
 
-    <div className="relative h-5 w-5 rounded-full bg-blue-400 border-2 border-white" />
-  </button>
+    return (
+      <button
+        key={index}
+        onClick={() =>
+          setSelectedSector(
+            zone.name
+          )
+        }
+        className="absolute"
+        style={{
+          left: zone.x,
+          top: zone.y,
+        }}
+      >
 
-  {/* Hohe Acht */}
-  <button
-    onClick={() =>
-      setSelectedSector(
-        "Hohe Acht"
-      )
-    }
-    className="absolute left-[74%] top-[18%]"
-  >
-    <div className="h-5 w-5 rounded-full bg-purple-500 animate-ping absolute" />
+        <div
+          className={`absolute h-6 w-6 rounded-full animate-ping opacity-70 ${
+            colorMap[
+              zone.color
+            ]
+          }`}
+        />
 
-    <div className="relative h-5 w-5 rounded-full bg-purple-400 border-2 border-white" />
-  </button>
+        <div
+          className={`relative h-6 w-6 rounded-full border-2 border-white ${
+            colorMap[
+              zone.color
+            ]
+          } flex items-center justify-center`}
+        >
 
-  {/* Brünnchen */}
-  <button
-    onClick={() =>
-      setSelectedSector(
-        "Brünnchen"
-      )
-    }
-    className="absolute left-[88%] top-[34%]"
-  >
-    <div className="h-5 w-5 rounded-full bg-yellow-500 animate-ping absolute" />
+          {zone.alert ===
+          "CODE60" ? (
+            <span className="text-[10px] font-bold text-white">
+              60
+            </span>
+          ) : zone.alert ===
+            "YELLOW" ? (
+            <span className="text-[10px] font-bold text-black">
+              !
+            </span>
+          ) : null}
 
-    <div className="relative h-5 w-5 rounded-full bg-yellow-400 border-2 border-white" />
-  </button>
+        </div>
+      </button>
+    );
+  }
+)}
+
+  
   {raceControl.map(
   (alert, index) => {
     let position =
@@ -130,32 +150,49 @@ function TrackMap({
 
   <div className="mt-3 space-y-2 text-white/70">
 
-    {selectedSector ===
-      "Karussell" && (
-      <>
-        <p>🌧 Wet surface</p>
-        <p>Grip → Low</p>
-        <p>Rain expected in 12m</p>
-      </>
-    )}
+    {trackZones
+  .filter(
+    (
+      zone: any
+    ) =>
+      zone.name ===
+      selectedSector
+  )
+  .map(
+    (
+      zone: any,
+      index: number
+    ) => (
+      <div
+        key={index}
+        className="space-y-2"
+      >
 
-    {selectedSector ===
-      "Hohe Acht" && (
-      <>
-        <p>🌫 Fog risk</p>
-        <p>Visibility → Medium</p>
-        <p>Wind gusts increasing</p>
-      </>
-    )}
+        <p>
+          Weather →{" "}
+          {zone.weather}
+        </p>
 
-    {selectedSector ===
-      "Brünnchen" && (
-      <>
-        <p>🌦 Damp surface</p>
-        <p>Grip → Improving</p>
-        <p>No active yellow flags</p>
-      </>
-    )}
+        <p>
+          Grip →{" "}
+          {zone.weather ===
+          "Wet"
+            ? "Low"
+            : zone.weather ===
+              "Damp"
+            ? "Medium"
+            : "High"}
+        </p>
+
+        <p>
+          Alert →{" "}
+          {zone.alert ||
+            "CLEAR"}
+        </p>
+
+      </div>
+    )
+  )}
 
   </div>
 </div>
@@ -272,6 +309,98 @@ export default function Home() {
     },
   ]);
 
+const trackZones = [
+  {
+    name: "Flugplatz",
+    x: "7%",
+    y: "67%",
+    weather: "Dry",
+    alert: null,
+    color: "green",
+  },
+
+  {
+    name: "Schwedenkreuz",
+    x: "4%",
+    y: "47%",
+    weather: "Damp",
+    alert: "YELLOW",
+    color: "yellow",
+  },
+
+  {
+    name: "Adenauer Forst",
+    x: "15%",
+    y: "20%",
+    weather: "Wet",
+    alert: null,
+    color: "blue",
+  },
+
+  {
+    name: "Bergwerk",
+    x: "54%",
+    y: "1%",
+    weather: "Fog",
+    alert: null,
+    color: "purple",
+  },
+
+  {
+    name: "Karussell",
+    x: "77%",
+    y: "25%",
+    weather: "Wet",
+    alert: "YELLOW",
+    color: "blue",
+  },
+
+  {
+    name: "Hohe Acht",
+    x: "90%",
+    y: "18%",
+    weather: "Fog",
+    alert: null,
+    color: "purple",
+  },
+
+  {
+    name: "Brünnchen",
+    x: "95%",
+    y: "35.5%",
+    weather: "Damp",
+    alert: "CODE60",
+    color: "yellow",
+  },
+
+  {
+    name: "Pflanzgarten",
+    x: "89%",
+    y: "43%",
+    weather: "Dry",
+    alert: null,
+    color: "green",
+  },
+
+  {
+    name: "Ex-Mühle",
+    x: "35%",
+    y: "3%",
+    weather: "Dry",
+    alert: null,
+    color: "green",
+  },
+
+  {
+    name: "Döttinger Höhe",
+    x: "59%",
+    y: "62%",
+    weather: "Dry",
+    alert: null,
+    color: "green",
+  },
+];
+
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -385,6 +514,52 @@ export default function Home() {
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
+        <div className="mt-4 rounded-2xl border border-white/10 bg-[#0b0b0b] px-5 py-4">
+
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <div>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+        Session
+      </p>
+
+      <h3 className="mt-1 text-lg font-bold text-green-400">
+        Race
+      </h3>
+    </div>
+
+    <div>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+        Time Remaining
+      </p>
+
+      <h3 className="mt-1 text-lg font-bold">
+        24:00:00
+      </h3>
+    </div>
+
+    <div>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+        Track State
+      </p>
+
+      <h3 className="mt-1 text-lg font-bold text-green-400">
+        GREEN
+      </h3>
+    </div>
+
+    <div>
+      <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+        Circuit
+      </p>
+
+      <h3 className="mt-1 text-lg font-bold">
+        Nürburgring 24H
+      </h3>
+    </div>
+
+  </div>
+</div>
         <div className="mb-5 rounded-3xl border border-white/10 bg-[#0b0b0b] p-5">
 
           <div className="flex items-center justify-between">
@@ -625,8 +800,17 @@ export default function Home() {
   raceControl={
     raceControl
   }
-/></div>
+  trackZones={
+    trackZones
+  }
+/>
+</div>
       </div>
+      <footer className="mt-10 border-t border-white/10 py-6 text-center text-sm text-white/40">
+
+  Built by SHAN7
+
+</footer>
     </main>
   );
 }

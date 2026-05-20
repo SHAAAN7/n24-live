@@ -1,110 +1,100 @@
-let previousDrivers:
-  Record<string, string> = {};
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 export async function getTimingData() {
+  try {
 
-  const leaderboard = [
-    {
-      position: 1,
-      car: "#911",
-      manufacturer: "Porsche",
-      driver: "Preining",
-      gap: "Leader",
-      status: "PIT",
-      lastLap: "8:12.4",
-    },
-    {
-      position: 2,
-      car: "#98",
-      manufacturer: "AMG",
-      driver: "Engel",
-      gap: "+7.2",
-      status: "PIT",
-      lastLap: "8:14.9",
-    },
-    {
-      position: 3,
-      car: "#1",
-      manufacturer: "BMW",
-      driver: "Vanthoor",
-      gap: "+12.8",
-      status: "TRACK",
-      lastLap: "8:15.2",
-    },
-  ];
+    const response =
+      await axios.get(
+        "https://livetiming.getraceresults.com/nurburgring"
+      );
 
-  const events: {
-    time: string;
-    message: string;
-  }[] = [];
+    const $ = cheerio.load(
+      response.data
+    );
 
-  leaderboard.forEach((car) => {
-    const previousDriver =
-      previousDrivers[car.car];
+    const leaderboard = [];
 
-    if (
-      previousDriver &&
-      previousDriver !== car.driver
-    ) {
-      events.unshift({
-        time: new Date()
-          .toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        message:
-          `Driver swap ${car.car}: ${previousDriver} → ${car.driver}`,
-      });
-    }
+    $("table tbody tr").each(
+      (
+        index,
+        element
+      ) => {
 
-    previousDrivers[car.car] =
-      car.driver;
+        const cols =
+          $(element)
+            .find("td");
 
-    if (car.status === "PIT") {
-      events.unshift({
-        time: new Date()
-          .toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        message:
-          `${car.car} pit stop`,
-      });
-    }
-  });
+        if (
+          cols.length > 5
+        ) {
 
-  const trackConditions = [
-    {
-      sector: "GP Section",
-      condition: "Dry ☀️",
-    },
-    {
-      sector: "Hatzenbach",
-      condition: "Damp 🌦",
-    },
-    {
-      sector: "Karussell",
-      condition: "Wet 🌧",
-    },
-    {
-      sector: "Hohe Acht",
-      condition: "Fog 🌫",
-    },
-    {
-      sector: "Brünnchen",
-      condition: "Cloudy ☁️",
-    },
-    {
-      sector: "Döttinger Höhe",
-      condition: "Dry ☀️",
-    },
-  ];
+          leaderboard.push({
+            position:
+              $(cols[0])
+                .text()
+                .trim(),
 
-  return {
-    updated:
-      new Date().toISOString(),
-    leaderboard,
-    events,
-    trackConditions,
-  };
+            car:
+              $(cols[1])
+                .text()
+                .trim(),
+
+            driver:
+              $(cols[2])
+                .text()
+                .trim(),
+
+            gap:
+              $(cols[4])
+                .text()
+                .trim(),
+
+            status:
+              "TRACK",
+
+            lastLap:
+              $(cols[5])
+                .text()
+                .trim(),
+          });
+        }
+      }
+    );
+
+    return {
+      updated:
+        new Date()
+          .toISOString(),
+
+      leaderboard:
+        leaderboard.slice(
+          0,
+          20
+        ),
+
+      events: [],
+
+      trackConditions: [],
+    };
+
+  } catch (err) {
+
+    console.error(
+      "Timing scrape failed",
+      err
+    );
+
+    return {
+      updated:
+        new Date()
+          .toISOString(),
+
+      leaderboard: [],
+
+      events: [],
+
+      trackConditions: [],
+    };
+  }
 }
